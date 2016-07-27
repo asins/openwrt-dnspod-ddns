@@ -26,6 +26,8 @@ curl_status=`which curl 2>/dev/null`
 
 os=$(uname -a | egrep -io 'openwrt' | tr [A-Z] [a-z])
 
+# wiki: https://www.dnspod.com/docs/records.html
+# API_url="https://api.dnspod.com"
 API_url="https://dnsapi.cn"
 format='json'
 lang='en'
@@ -50,6 +52,7 @@ printMsg() {
 
 getIp() {
 #	curl -s http://checkip.dyndns.com | sed -n 's/.*: \([0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\).*/\1/p'
+#	curl -s ip.cn |sed -n 's/.*：\([0-9]\{1,3\}\(\.[0-9]\{1,3\}\)\{3\}\).*/\1/p'
 	curl -s http://members.3322.org/dyndns/getip
 }
 
@@ -89,10 +92,10 @@ getRecordId() {
 
 		#if there are multi @ subdomains, get the first non-NS record id only
 		if [ "$IS_NS" = "NS" ];then
-			numofline=$(getJsonValue id | sed '/^[0-9]\{7\}$/d' | wc -l)
-			[ $numofline -eq 3 ] && tmp_result_id="$(getJsonValue id | sed '/^[0-9]\{7\}$/d' | head -n1 )" || continue
+			numofline=$(getJsonValue '[id' | sed '/^[0-9]\{7\}$/d' | wc -l)
+			[ $numofline -eq 3 ] && tmp_result_id="$(getJsonValue '[id' | sed '/^[0-9]\{7\}$/d' | head -n1 )" || continue
 		else
-			tmp_result_id="$(getJsonValue id | sed '/^[0-9]\{7\}$/d')"
+			tmp_result_id="$(getJsonValue '[id' | sed '/^[0-9]\{7\}$/d')"
 		fi	
 		#if result_id is not empty or unset, append a space to split record id
 		result_id="${result_id:+${result_id} }${tmp_result_id}"
